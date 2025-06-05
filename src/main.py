@@ -1,6 +1,5 @@
-import argparse, json, sys
-
-from modules.email_checker import *
+import argparse, json, sys, modules
+import modules.email_checker
 from target import Target
 
 def parse_arguements() -> argparse.Namespace:
@@ -12,7 +11,7 @@ def parse_arguements() -> argparse.Namespace:
     parser.add_argument(
         '--target',
         required=True,
-        help="who or what are trying to gain info on"
+        help="who or what you are trying to gain info on"
     )
     
     parser.add_argument(
@@ -40,11 +39,11 @@ def main():
     try:
         args = parse_arguements()
         
-        t = Target(args.fname, args.surname, args.email)
+        t = Target(target_name=args.target, first_name=args.fname, surname=args.surname, email_address=args.email)
         
         # Rest of logic
-        print("Hello!\n\n")
-
+        print(f"Starting scan on {t.target_name}")
+        t.email_breaches = modules.email_checker.check_breaches(t.email_address) # Getting email_breaches is done
         pass
     
     except Exception as e:
