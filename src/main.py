@@ -1,5 +1,6 @@
 import argparse, json, sys, modules
 import modules.email_checker
+import modules.social_media_checker
 from target import Target
 
 def parse_arguements() -> argparse.Namespace:
@@ -43,7 +44,9 @@ def main():
         
         # Rest of logic
         print(f"Starting scan on {t.target_name}")
+
         t.email_breaches = modules.email_checker.check_breaches(t.email_address) # Getting email_breaches is done
+        t.social_media_profiles = modules.social_media_checker.find_socials(t)
         pass
     
     except Exception as e:
