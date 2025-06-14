@@ -1,5 +1,5 @@
 class Target:
-    def __init__(self, target_name: str = "t1",first_name: str = None, surname: str = None, email_address: str = None):
+    def __init__(self, target_name: str = "t1", first_name: str = None, surname: str = None, email_address: str = None):
 
         self.target_name = target_name
 
