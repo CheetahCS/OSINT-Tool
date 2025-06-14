@@ -1,7 +1,12 @@
-import argparse, json, sys, modules
+import argparse
+import json
+import sys
+import modules
+import asyncio
 import modules.email_checker
 import modules.social_media_checker
 from target import Target
+
 
 def parse_arguements() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -14,7 +19,7 @@ def parse_arguements() -> argparse.Namespace:
         required=True,
         help="who or what you are trying to gain info on"
     )
-    
+
     parser.add_argument(
         '--fname',
         required=False,
@@ -36,21 +41,31 @@ def parse_arguements() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def main():
+async def async_main():
     try:
         args = parse_arguements()
-        
-        t = Target(target_name=args.target, first_name=args.fname, surname=args.surname, email_address=args.email)
-        
+
+        t = Target(target_name=args.target, first_name=args.fname,
+                   surname=args.surname, email_address=args.email)
+
         # Rest of logic
         print(f"Starting scan on {t.target_name}")
 
-        t.email_breaches = modules.email_checker.check_breaches(t.email_address) # Getting email_breaches is done
-        t.social_media_profiles = modules.social_media_checker.find_socials(t)
+        print("INFO: Checking if email was breached")
+        t.email_breaches = modules.email_checker.check_breaches(
+            t.email_address)  # Getting email_breaches is done
+        print("INFO: Finding social media accounts")
+        t.social_media_profiles = await modules.social_media_checker.find_socials(t)
         pass
-    
+
     except Exception as e:
-        pass
+        # Print the error to the console
+        print(f"[!] A critical error occurred: {e}", file=sys.stderr)
+
+
+def main():
+    asyncio.run(async_main())
+
 
 if __name__ == "__main__":
     main()
