@@ -2,16 +2,33 @@
 import target
 import asyncio
 import httpx
+import logging
 from holehe.modules.social_media.instagram import instagram
 from holehe.modules.social_media.twitter import twitter
 from holehe.modules.social_media.snapchat import snapchat
 from holehe.modules.social_media.discord import discord
+from holehe.modules.social_media.myspace import myspace
+from holehe.modules.social_media.pinterest import pinterest
+from holehe.modules.social_media.patreon import patreon
+from holehe.modules.social_media.bitmoji import bitmoji
+from holehe.modules.social_media.tumblr import tumblr
+from holehe.modules.social_media.xing import xing
+
+# Configure Logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 SITES_TO_CHECK = [
     instagram,
     twitter,
     snapchat,
-    discord
+    discord,
+    myspace,
+    pinterest,
+    patreon,
+    bitmoji,
+    tumblr,
+    xing
     # Add other function names here...
 ]
 
@@ -35,8 +52,7 @@ async def check_by_email(email: str):
     Checks email registrations by calling individual site modules from holehe
     concurrently, as shown in the official documentation.
     """
-    print(
-        f"[*] Checking email registrations for {email} on {len(SITES_TO_CHECK)} sites...")
+    logger.info(f"Checking email registrations for {email} on {len(SITES_TO_CHECK)} sites...")
     found_sites = []
 
     # Create an httpx.AsyncClient session, which holehe's modules need
@@ -53,8 +69,7 @@ async def check_by_email(email: str):
             if result is not None:
                 found_sites.append(result)
 
-    print(
-        f"[*] Found email registrations on: {found_sites}" if found_sites else "[*] No email registrations found.")
+    logger.info(f"Found email registrations on: {found_sites}") if found_sites else logger.info(f"No email registrations found.")
     return found_sites
 
 
@@ -63,6 +78,7 @@ async def run_site_check(email, client, site_function):
     Helper function to run a single site check and safely handle its output.
     """
     # The holehe functions expect a list to append their result dictionary to
+    site_name = getattr(site_function, '__name__', 'unknown')
     output_list = []
     try:
         # Call the specific site function (e.g., instagram(email, client, out))
@@ -73,10 +89,17 @@ async def run_site_check(email, client, site_function):
             if result_dict.get("exists"):
                 # Return the name of the site if found
                 return result_dict.get("name")
-
-    except Exception:
-        # Silently ignore errors for any single site check to not crash the whole scan
+            
+    
+    except asyncio.TimeoutError:
+        logger.warning(f"Timeout checking {site_name}")
+    except httpx.RequestError as e:
+        logger.warning(f"Request error checking {site_name}: {e}")
+    except Exception as e:
+        logger.warning(f"Unexpected error checking {site_name}: {e}")
         pass
+
+    logger.info(f"None on {site_name}")
     return None  # Return None if not found or if an error occurred
 
 
