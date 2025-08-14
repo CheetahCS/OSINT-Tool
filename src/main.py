@@ -9,6 +9,7 @@ from target import Target
 from rich.panel import Panel
 from rich.console import Console
 from rich.table import Table
+from rich.text import Text
 
 
 def parse_arguements() -> argparse.Namespace:
@@ -47,7 +48,7 @@ def parse_arguements() -> argparse.Namespace:
 def present_email_info(t: Target):
     if not (t.email_breaches):
         console = Console()
-        summary_text = f"No email breaches found for: {t.email_address}"
+        summary_text = Text(f"No email breaches found for: {t.email_address}", justify="center")
         console.print(
             Panel(summary_text, title="Scan Summary", style="bold green"))
     else:
@@ -56,7 +57,7 @@ def present_email_info(t: Target):
         with open("../data/email_info.json", "w") as f:
             json.dump(t.email_breaches, f)
         console = Console()
-        summary_text = f"Found {t.email_breaches.get('breaches_num')} breaches for: {t.email_address}"
+        summary_text = Text(f"Found {t.email_breaches.get('breaches_num')} breaches for: {t.email_address}\nRisk: {t.email_breaches.get('risk_label')} | Score: {t.email_breaches.get('risk_score')}", justify="center")
 
         table = Table(title="Breach Details")
         table.add_column("Breach Name", style="cyan")
