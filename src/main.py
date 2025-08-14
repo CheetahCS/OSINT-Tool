@@ -6,6 +6,9 @@ import asyncio
 import modules.email_checker
 import modules.social_media_checker
 from target import Target
+from rich.panel import Panel
+from rich.console import Console
+from rich.table import Table
 
 
 def parse_arguements() -> argparse.Namespace:
@@ -41,6 +44,43 @@ def parse_arguements() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def present_email_info(t: Target):
+    if not (t.email_breaches):
+        console = Console()
+        summary_text = f"No email breaches found for: {t.email_address}"
+        console.print(
+            Panel(summary_text, title="Scan Summary", style="bold green"))
+    else:
+        print()
+        # print(t.email_breaches)
+        with open("../data/email_info.json", "w") as f:
+            json.dump(t.email_breaches, f)
+        console = Console()
+        summary_text = f"Found {t.email_breaches.get('breaches_num')} breaches for: {t.email_address}"
+
+        table = Table(title="Breach Details")
+        table.add_column("Breach Name", style="cyan")
+        table.add_column("Domain", style="magenta")
+        table.add_column("Breach Date", style="green")
+        table.add_column("Description")
+
+        for breach in t.email_breaches.get('breaches_in_detail'):
+            table.add_row(
+                breach['name'],
+                breach['domain'],
+                breach['xposed_date'],
+                breach['details']
+            )
+
+        console.print(
+            Panel(summary_text, title="Scan Summary", style="bold red"))
+        console.print(table)
+
+
+def present_info_gathered(t: Target):
+    present_email_info(t)
+
+
 async def async_main():
     try:
         args = parse_arguements()
@@ -56,6 +96,7 @@ async def async_main():
             t.email_address)  # Getting email_breaches is done
         print("INFO: Finding social media accounts")
         t.social_media_profiles = await modules.social_media_checker.find_socials(t)
+        present_info_gathered(t)
         pass
 
     except Exception as e:
