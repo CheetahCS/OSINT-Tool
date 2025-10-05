@@ -1,6 +1,6 @@
 # OSINT-Tool
 
-I am developing a command-line OSINT tool designed to retrieve and present public information.
+A command-line OSINT tool designed to retrieve and present public information.
 
 ## Current functionality
 
@@ -23,7 +23,7 @@ To use this tool, you will need Python 3.8+ and Git installed on your system.
 First, clone the repository to your local machine and navigate into the project directory:
 
 ```bash
-git clone [https://github.com/your-username/OSINT-Tool.git](https://github.com/your-username/OSINT-Tool.git)
+git clone https://github.com/CheetahCS/OSINT-Tool.git
 cd OSINT-Tool/OSINT-Tool
 
 pip install .
