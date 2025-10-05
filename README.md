@@ -24,14 +24,16 @@ First, clone the repository to your local machine and navigate into the project 
 
 ```bash
 git clone https://github.com/CheetahCS/OSINT-Tool.git
-cd OSINT-Tool/OSINT-Tool
+cd OSINT-Tool
 
 pip install .
 ```
 ### 2. Usage
 
-Now, run the following command with the desired email to get information on breaches associated with that email
+Now, change into the src directory and run main.py with the desired email to get information on breaches associated with that email
 
 ```bash
-python3 main.py --target SomeTarget --email example@gmail.com
+cd src
+
+python3 main.py --target Title_of_Scan --email example@gmail.com
 ```
