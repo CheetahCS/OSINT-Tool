@@ -50,12 +50,8 @@ def present_email_info(t: Target):
         console = Console()
         summary_text = Text(f"No email breaches found for: {t.email_address}", justify="center")
         console.print(
-            Panel(summary_text, title="Scan Summary", style="bold green"))
+            Panel(summary_text, title=f"Scan Summary: [bold purple]{t.target_name}[/]", style="bold green"))
     else:
-        print()
-        # print(t.email_breaches)
-        with open("../data/email_info.json", "w") as f:
-            json.dump(t.email_breaches, f)
         console = Console()
         summary_text = Text(f"Found {t.email_breaches.get('breaches_num')} breaches for: {t.email_address}\nRisk: {t.email_breaches.get('risk_label')} | Score: {t.email_breaches.get('risk_score')}", justify="center")
 
@@ -74,8 +70,13 @@ def present_email_info(t: Target):
             )
 
         console.print(
-            Panel(summary_text, title="Scan Summary", style="bold red"))
+            Panel(summary_text, title=f"Scan Summary: [bold purple]{t.target_name}[/]", style="bold red"))
         console.print(table)
+
+
+def save_email_info(t:Target):
+    with open("../data/email_info.json", "w") as f:
+        json.dump(t.email_breaches, f)
 
 
 def present_info_gathered(t: Target):
